@@ -1,0 +1,23 @@
+# Local secrets and configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# Build and test output
+**/target/
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+**/playwright-report/
+**/test-results/
+*.log
+
+# Local tools
+.idea/
+.vscode/
+.DS_Store
