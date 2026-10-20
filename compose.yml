@@ -1,0 +1,83 @@
+name: salary-management
+services:
+  db:
+    image: postgres:17-bookworm@sha256:3645570cccdfa447589da9f57dd740faa29b30938e861289a5574b6ca6b03826
+    environment:
+      POSTGRES_DB: salary
+      POSTGRES_USER: ${DB_USERNAME:-salary}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Run scripts/run.sh or scripts/run.ps1 first}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d salary']
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+    stop_grace_period: 30s
+    mem_limit: 512m
+    logging:
+      driver: json-file
+      options: { max-size: 10m, max-file: '3' }
+  app:
+    image: salary-management:local
+    build:
+      context: .
+      target: runtime
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/salary
+      DB_USERNAME: ${DB_USERNAME:-salary}
+      DB_PASSWORD: ${DB_PASSWORD:?Run the startup script first}
+      HR_USERNAME: ${HR_USERNAME:-hr}
+      HR_PASSWORD: ${HR_PASSWORD:?Run the startup script first}
+      DEMO_SEED: ${DEMO_SEED:-true}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    ports:
+      - '127.0.0.1:${APP_PORT:-8080}:8080'
+    depends_on:
+      db: { condition: service_healthy }
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop: [ALL]
+    mem_limit: 768m
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options: { max-size: 10m, max-file: '3' }
+  test-db:
+    profiles: [test]
+    image: postgres:17-bookworm@sha256:3645570cccdfa447589da9f57dd740faa29b30938e861289a5574b6ca6b03826
+    environment:
+      POSTGRES_DB: salary_test
+      POSTGRES_USER: salary
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Run the startup script first}
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U salary -d salary_test']
+      interval: 2s
+      timeout: 5s
+      retries: 20
+  backend-tests:
+    profiles: [test]
+    build:
+      context: .
+      target: backend-tests
+    environment:
+      DB_URL: jdbc:postgresql://test-db:5432/salary_test
+      DB_USERNAME: salary
+      DB_PASSWORD: ${DB_PASSWORD:?Run the startup script first}
+      HR_PASSWORD: ${HR_PASSWORD:?Run the startup script first}
+      COOKIE_SECURE: 'false'
+      DEMO_SEED: 'false'
+    depends_on:
+      test-db: { condition: service_healthy }
+  frontend-check:
+    profiles: [test]
+    build:
+      context: .
+      target: frontend-check
+volumes:
+  postgres-data:

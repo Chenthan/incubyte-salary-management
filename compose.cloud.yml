@@ -1,0 +1,16 @@
+# Optional override only for this managed cloud's HTTPS interception CA.
+services:
+  app:
+    build:
+      secrets: [proxy_ca]
+  backend-tests:
+    build:
+      secrets: [proxy_ca]
+    volumes:
+      - ${CODEX_PROXY_CERT:?Cloud certificate path missing}:/run/secrets/proxy_ca:ro
+  frontend-check:
+    build:
+      secrets: [proxy_ca]
+secrets:
+  proxy_ca:
+    file: ${CODEX_PROXY_CERT:?Cloud certificate path missing}

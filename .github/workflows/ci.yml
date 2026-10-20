@@ -1,0 +1,48 @@
+name: Validate salary workspace
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24.19.0
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Docker-only unit and PostgreSQL integration checks
+        run: ./scripts/test.sh
+      - name: Build and start the assembled application
+        run: ./scripts/run.sh
+      - name: Verify deterministic seed
+        run: |
+          count=$(docker compose exec -T db psql -U salary -d salary -At -c 'SELECT count(*) FROM employees WHERE demo_seed_key IS NOT NULL')
+          test "$count" = 10000
+      - name: Install locked browser-test dependencies
+        working-directory: frontend
+        run: |
+          npm ci --no-fund
+          npx playwright install --with-deps chromium
+      - name: Browser journeys and accessibility at desktop and phone sizes
+        working-directory: frontend
+        run: npm run e2e
+      - name: Browser report on failure
+        if: failure()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: browser-test-report
+          path: frontend/playwright-report
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Stop disposable CI services
+        if: always()
+        run: docker compose --profile test down --volumes
