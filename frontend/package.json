@@ -9,7 +9,8 @@
     "test": "ng test --watch=false",
     "e2e": "playwright test",
     "format": "prettier --write src e2e *.json *.ts",
-    "format:check": "prettier --check src e2e *.json *.ts"
+    "format:check": "prettier --check src e2e *.json *.ts",
+    "typecheck:e2e": "tsc -p tsconfig.e2e.json"
   },
   "private": true,
   "packageManager": "npm@11.9.0",
@@ -27,11 +28,13 @@
     "@angular/build": "21.2.27",
     "@angular/cli": "21.2.27",
     "@angular/compiler-cli": "21.2.25",
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.19.2",
     "jsdom": "28.0.0",
     "prettier": "3.8.1",
     "typescript": "5.9.3",
-    "vitest": "4.0.8",
-    "@playwright/test": "1.64.1"
+    "vitest": "4.0.8"
   },
   "engines": {
     "node": ">=24.19.0 <25",

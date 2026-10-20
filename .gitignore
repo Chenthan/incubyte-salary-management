@@ -24,3 +24,7 @@
 .cache/
 .tools/
 artifacts/
+__pycache__/
+*.pyc
+backups/
+*.dump

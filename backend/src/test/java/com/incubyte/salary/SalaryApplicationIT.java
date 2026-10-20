@@ -89,6 +89,11 @@ class SalaryApplicationIT {
         .isEqualTo(409);
     assertThat(tree(send("GET", "/api/employees/" + id, null, false)).path("annualSalary").asText())
         .isEqualTo("150.25");
+    assertThat(
+            tree(send("PUT", "/api/employees/" + id, input("HR-001", "999.00", version), true))
+                .path("code")
+                .asText())
+        .isEqualTo("STALE_EMPLOYEE");
   }
 
   @Test

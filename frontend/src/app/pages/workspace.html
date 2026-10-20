@@ -1,0 +1,409 @@
+<div class="page workspace">
+  <div class="page-heading">
+    <div>
+      <div class="eyebrow">COMPENSATION, IN CONTEXT</div>
+      <h1>{{ overview ? 'Your people, at a glance.' : 'Employees' }}</h1>
+      <p class="muted">
+        {{
+          overview
+            ? 'A little perspective on the people behind the numbers.'
+            : 'Find your people. Keep their compensation details up to date.'
+        }}
+      </p>
+    </div>
+    <a class="button primary" routerLink="/employees/new"
+      ><span aria-hidden="true">+</span> Add employee</a
+    >
+  </div>
+  <form
+    class="filter-panel"
+    [formGroup]="filters"
+    (ngSubmit)="apply()"
+    aria-label="Population filters"
+  >
+    <div class="filter-main">
+      <div class="search-field">
+        <label for="search">Search people</label>
+        <div class="search-input">
+          <span aria-hidden="true">⌕</span
+          ><input
+            id="search"
+            formControlName="q"
+            placeholder="Name or employee ID"
+            maxlength="100"
+          />
+        </div>
+      </div>
+      <div>
+        <label for="country">Country</label
+        ><select id="country" formControlName="country">
+          <option value="">All countries</option>
+          @for (country of reference()?.countries; track country.code) {
+            <option [value]="country.code">{{ country.label }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label for="department">Department</label
+        ><select id="department" formControlName="department">
+          <option value="">All departments</option>
+          @for (department of reference()?.departments; track department.code) {
+            <option [value]="department.code">{{ department.label }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label for="status">Status</label
+        ><select id="status" formControlName="status">
+          <option value="ACTIVE">Active employees</option>
+          <option value="INACTIVE">Inactive employees</option>
+          <option value="ALL">All employees</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-secondary">
+      <div>
+        <label for="reporting">Reporting</label
+        ><select id="reporting" formControlName="mode">
+          <option value="usd">USD estimate</option>
+          <option value="native">Native currencies</option>
+        </select>
+      </div>
+      <div>
+        <label for="currency">Native currency</label
+        ><select id="currency" formControlName="currency">
+          <option value="">All currencies</option>
+          @for (rate of reference()?.rates; track rate.currency) {
+            <option [value]="rate.currency">{{ rate.currency }}</option>
+          }
+        </select>
+      </div>
+      <div class="threshold">
+        <label for="threshold"
+          >Annual salary above
+          {{
+            filters.controls.mode.value === 'usd' ? '(USD estimate)' : '(native currency)'
+          }}</label
+        ><input
+          id="threshold"
+          formControlName="minSalary"
+          inputmode="decimal"
+          placeholder="No minimum"
+          maxlength="13"
+        />
+      </div>
+      @if (!overview) {
+        <div>
+          <label for="sort">Sort by</label
+          ><select id="sort" formControlName="sort">
+            <option value="name">Name</option>
+            <option value="code">Employee ID</option>
+            <option value="salary">Salary</option>
+            <option value="country">Country</option>
+            <option value="department">Department</option>
+          </select>
+        </div>
+        <div>
+          <label for="direction">Direction</label
+          ><select id="direction" formControlName="direction">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      }
+      <div class="filter-actions">
+        <button class="button subtle" type="button" (click)="reset()">Reset</button
+        ><button class="button" type="submit">
+          Apply filters <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+  </form>
+  @if (error()) {
+    <div class="notice error" role="alert">
+      {{ error() }} <button class="text-button" (click)="retry()">Try again</button>
+    </div>
+  }
+  @if (loading()) {
+    <div class="loading-state" role="status">
+      <span class="spinner"></span> Gathering your people picture…
+    </div>
+  }
+  @if (report(); as report) {
+    <div class="section-overline">
+      <span><span class="status-dot"></span> YOUR SELECTED POPULATION</span
+      ><span>As of {{ report.asOf | date: 'shortTime' }}</span>
+    </div>
+    <section class="metrics" aria-label="Salary summary">
+      <article class="metric">
+        <div class="metric-label">
+          {{ query()['status'] === 'ACTIVE' ? 'Active employees' : 'Employees'
+          }}<span aria-hidden="true">○</span>
+        </div>
+        <strong class="metric-value" data-testid="headcount">{{
+          report.headcount | number
+        }}</strong>
+        <p>People in this view</p>
+      </article>
+      @if (statistics(); as stats) {
+        <article class="metric">
+          <div class="metric-label">Annual base-salary cost<span aria-hidden="true">→</span></div>
+          <strong class="metric-value money-value" data-testid="salary-total">{{
+            stats.total | money: stats.currency
+          }}</strong>
+          <p>{{ usd() ? 'Illustrative USD estimate' : 'Native currency total' }}</p>
+        </article>
+        <article class="metric">
+          <div class="metric-label">Average salary<span aria-hidden="true">≈</span></div>
+          <strong class="metric-value money-value">{{
+            stats.average | money: stats.currency
+          }}</strong>
+          <p>Per employee, annual base</p>
+        </article>
+        <article class="metric">
+          <div class="metric-label">Median salary<span aria-hidden="true">≋</span></div>
+          <strong class="metric-value money-value">{{
+            stats.median | money: stats.currency
+          }}</strong>
+          <p>The middle of this population</p>
+        </article>
+      } @else {
+        <article class="metric native-message">
+          <div class="metric-label">Native currency reporting</div>
+          <strong class="metric-value">{{ report.nativeGroups.length }} currencies</strong>
+          <p>Totals stay separate. Choose a currency to compare costs.</p>
+        </article>
+      }
+    </section>
+    @if (overview) {
+      <div class="insight-grid">
+        <section class="panel department-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Where salary cost sits</h2>
+              <p>Annual base salary by department</p>
+            </div>
+            <span class="tag">{{ usd() ? 'USD · ESTIMATE' : 'NATIVE' }}</span>
+          </div>
+          @if (!report.headcount) {
+            <div class="empty-chart">No salaries match this population.</div>
+          } @else if (!comparable()) {
+            <div class="empty-chart">
+              Select one native currency above to compare departments on the same basis.
+            </div>
+          } @else {
+            <div class="bars" role="list" aria-label="Department salary costs">
+              @for (
+                department of report.departments;
+                track department.code + department.currency;
+                let i = $index
+              ) {
+                <div class="bar-row" role="listitem">
+                  <div class="bar-label">
+                    <a routerLink="/employees" [queryParams]="departmentQuery(department.code)">{{
+                      department.name
+                    }}</a
+                    ><span>{{ department.total | money: department.currency }}</span>
+                  </div>
+                  <div class="bar-track" aria-hidden="true">
+                    <div
+                      class="bar-fill"
+                      [class]="'bar-fill color-' + i"
+                      [style.width.%]="barWidth(department)"
+                    ></div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+        <aside class="panel context-panel">
+          <div class="context-symbol" aria-hidden="true">→</div>
+          <div class="eyebrow">THE NUMBERS, WITH CONTEXT</div>
+          <h2>A shared view.<br />A thoughtful starting point.</h2>
+          <p>
+            These are gross annual base salaries. Bonuses, taxes, and payroll are outside this
+            picture.
+          </p>
+          @if (statistics(); as stats) {
+            <div class="range">
+              <span>Salary range{{ usd() ? ' · USD estimate' : '' }}</span
+              ><strong>{{ stats.minimum | money: stats.currency }}</strong
+              ><span>to</span><strong>{{ stats.maximum | money: stats.currency }}</strong>
+            </div>
+          }
+          <p class="small-note">Salary distributions alone do not establish pay fairness.</p>
+        </aside>
+      </div>
+    }
+    <div class="report-note">
+      <span class="note-mark" aria-hidden="true">i</span>
+      <p>
+        {{
+          usd()
+            ? report.estimateLabel + '. Native records stay unchanged.'
+            : 'Native totals are separated by currency. No mixed-currency total is calculated.'
+        }}
+      </p>
+    </div>
+    <details class="native-details panel">
+      <summary>Native salary statistics & fixed conversion rates</summary>
+      <div class="details-content">
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Native salary statistics">
+          <table>
+            <thead>
+              <tr>
+                <th>Currency</th>
+                <th>People</th>
+                <th>Total annual base</th>
+                <th>Mean</th>
+                <th>Median</th>
+                <th>Minimum</th>
+                <th>Maximum</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (group of report.nativeGroups; track group.currency) {
+                <tr>
+                  <th>{{ group.currency }}</th>
+                  <td>{{ group.count | number }}</td>
+                  <td>{{ group.total | money: group.currency }}</td>
+                  <td>{{ group.average | money: group.currency }}</td>
+                  <td>{{ group.median | money: group.currency }}</td>
+                  <td>{{ group.minimum | money: group.currency }}</td>
+                  <td>{{ group.maximum | money: group.currency }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="muted small-note">
+          Fixed assessment assumptions, not market quotes. USD per one native unit; version
+          {{ report.rates[0]?.version }}, effective {{ report.rates[0]?.effectiveDate }}. Conversion
+          precedes aggregation; only reported amounts are rounded half up to two decimals.
+        </p>
+        <div class="rate-chips">
+          @for (rate of report.rates; track rate.currency) {
+            <span>1 {{ rate.currency }} = {{ rate.usdPerUnit }} USD</span>
+          }
+        </div>
+      </div>
+    </details>
+  }
+  @if (employees(); as employees) {
+    <section class="panel people-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>
+            {{ overview ? 'People in this view' : 'Your people' }}
+            <span class="count-badge">{{ employees.totalElements | number }}</span>
+          </h2>
+          <p>
+            {{
+              overview
+                ? 'Explore the records behind your salary picture.'
+                : 'Native annual base salaries. Select an employee to view or edit.'
+            }}
+          </p>
+        </div>
+        @if (overview) {
+          <a class="text-link" routerLink="/employees" [queryParams]="listQuery()"
+            >View all employees <span aria-hidden="true">→</span></a
+          >
+        }
+      </div>
+      @if (employees.content.length) {
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Employee records">
+          <table class="employee-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Country</th>
+                <th class="numeric">Annual base salary</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (employee of employees.content; track employee.id; let i = $index) {
+                <tr>
+                  <td>
+                    <a
+                      class="employee-link"
+                      [routerLink]="['/employees', employee.id]"
+                      [queryParams]="query()"
+                      ><span [class]="'person-avatar color-' + (i % 6)" aria-hidden="true"
+                        >{{ employee.firstName[0] }}{{ employee.lastName[0] }}</span
+                      ><span
+                        ><strong>{{ employee.firstName }} {{ employee.lastName }}</strong
+                        ><small>{{ employee.employeeCode }}</small></span
+                      ></a
+                    >
+                  </td>
+                  <td>
+                    <span class="department-label">{{ employee.departmentName }}</span>
+                  </td>
+                  <td>
+                    <span class="country-code">{{ employee.countryCode }}</span
+                    >{{ employee.countryName }}
+                  </td>
+                  <td class="numeric salary-cell">
+                    <strong>{{ employee.annualSalary | money: employee.currencyCode }}</strong>
+                    @if (usd() && employee.currencyCode !== 'USD') {
+                      <small>≈ {{ employee.usdEstimate | money: 'USD' }}</small>
+                    }
+                  </td>
+                  <td>
+                    <span class="employee-status" [class.inactive]="!employee.active"
+                      ><span></span>{{ employee.active ? 'Active' : 'Inactive' }}</span
+                    >
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <span aria-hidden="true">⌕</span>
+          <h3>No people in this view</h3>
+          <p>Try a different search or reset your filters.</p>
+          <button class="button" (click)="reset()">Reset filters</button>
+        </div>
+      }
+      @if (!overview && employees.totalElements) {
+        <div class="pagination">
+          <span
+            >Page {{ employees.page + 1 }} of {{ employees.totalPages }} ·
+            {{ employees.totalElements | number }} employees</span
+          >
+          <div class="page-actions">
+            <label for="page-size">Rows</label
+            ><select id="page-size" [value]="employees.size" (change)="changeSize($event)">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option></select
+            ><button
+              class="button"
+              (click)="page(employees.page - 1)"
+              [disabled]="employees.page === 0"
+            >
+              Previous</button
+            ><button
+              class="button"
+              (click)="page(employees.page + 1)"
+              [disabled]="employees.page + 1 >= employees.totalPages"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+  }
+  <footer class="page-footer">
+    <span>Built around people. Grounded in numbers.</span
+    ><span>Gross annual base salary · Synthetic data</span>
+  </footer>
+</div>

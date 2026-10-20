@@ -1,0 +1,200 @@
+<div class="page employee-page">
+  <a class="back-link" routerLink="/employees" [queryParams]="query">← Back to employees</a>
+  <div class="page-heading">
+    <div>
+      <div class="eyebrow">THE PERSON BEHIND THE RECORD</div>
+      <h1>{{ isNew ? 'A new face in the picture.' : 'Employee details' }}</h1>
+      <p class="muted">
+        {{
+          isNew
+            ? 'Add an employee and their current annual base salary.'
+            : 'Keep the details clear, current, and in good hands.'
+        }}
+      </p>
+    </div>
+    @if (employee(); as employee) {
+      <button
+        class="button"
+        [class.danger]="employee.active"
+        [disabled]="busy()"
+        (click)="changeStatus()"
+      >
+        {{ employee.active ? 'Deactivate employee' : 'Reactivate employee' }}
+      </button>
+    }
+  </div>
+  @if (loading()) {
+    <div class="loading-state" role="status">
+      <span class="spinner"></span> Loading employee details…
+    </div>
+  }
+  @if (error()) {
+    <div #errorSummary class="notice error" role="alert" tabindex="-1">
+      {{ error() }}
+      @if (conflict() && employee()) {
+        <p>Your entries are still here. Reload the latest record before reapplying your changes.</p>
+        <button class="button" (click)="load()" [disabled]="busy()">Reload latest record</button>
+      }
+    </div>
+  }
+  @if (success()) {
+    <div class="notice success" role="status">{{ success() }}</div>
+  }
+  @if (query['created']) {
+    <div class="notice success" role="status">Employee created.</div>
+  }
+  @if (!loading() && (isNew || employee())) {
+    <div class="employee-grid">
+      <form
+        class="panel employee-editor"
+        [formGroup]="form"
+        (ngSubmit)="save()"
+        [attr.aria-busy]="busy()"
+      >
+        <fieldset [disabled]="busy()">
+          <legend>Employee information</legend>
+          <div class="form-intro">A few details to make this record their own.</div>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label for="employeeCode">Employee ID</label
+              ><input
+                id="employeeCode"
+                formControlName="employeeCode"
+                [readonly]="!isNew"
+                maxlength="30"
+                autocomplete="off"
+                placeholder="e.g. EMP-10001"
+                [attr.aria-invalid]="!!fieldError('employeeCode')"
+                aria-describedby="employeeCode-error code-help"
+              /><small id="code-help">A unique identifier. It stays the same after creation.</small
+              ><span id="employeeCode-error" class="field-error">{{
+                fieldError('employeeCode')
+              }}</span>
+            </div>
+            @for (field of nameFields; track field.key) {
+              <div class="form-field" [class.full]="field.key === 'email'">
+                <label [for]="field.key">{{ field.label }}</label
+                ><input
+                  [id]="field.key"
+                  [type]="field.type"
+                  [formControlName]="field.key"
+                  [autocomplete]="field.autocomplete"
+                  [maxlength]="field.max"
+                  [attr.aria-invalid]="!!fieldError(field.key)"
+                  [attr.aria-describedby]="field.key + '-error'"
+                /><span [id]="field.key + '-error'" class="field-error">{{
+                  fieldError(field.key)
+                }}</span>
+              </div>
+            }
+            <div class="form-field">
+              <label for="countryCode">Country</label
+              ><select
+                id="countryCode"
+                formControlName="countryCode"
+                aria-describedby="countryCode-error"
+              >
+                @for (country of reference()?.countries; track country.code) {
+                  <option [value]="country.code">{{ country.label }}</option>
+                }</select
+              ><span id="countryCode-error" class="field-error">{{
+                fieldError('countryCode')
+              }}</span>
+            </div>
+            <div class="form-field">
+              <label for="departmentCode">Department</label
+              ><select
+                id="departmentCode"
+                formControlName="departmentCode"
+                aria-describedby="departmentCode-error"
+              >
+                @for (department of reference()?.departments; track department.code) {
+                  <option [value]="department.code">{{ department.label }}</option>
+                }</select
+              ><span id="departmentCode-error" class="field-error">{{
+                fieldError('departmentCode')
+              }}</span>
+            </div>
+          </div>
+          <div class="form-divider"></div>
+          <h2>Current compensation</h2>
+          <p class="muted form-intro">
+            Gross annual base salary, before taxes. Bonuses and payroll are excluded.
+          </p>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="annualSalary">Annual base salary</label
+              ><input
+                id="annualSalary"
+                formControlName="annualSalary"
+                inputmode="decimal"
+                maxlength="13"
+                placeholder="e.g. 85000.00"
+                [attr.aria-invalid]="!!fieldError('annualSalary')"
+                aria-describedby="salary-help annualSalary-error"
+              /><small id="salary-help">Positive amount, up to two decimal places.</small
+              ><span id="annualSalary-error" class="field-error">{{
+                fieldError('annualSalary')
+              }}</span>
+            </div>
+            <div class="form-field">
+              <label for="currencyCode">Salary currency</label
+              ><select
+                id="currencyCode"
+                formControlName="currencyCode"
+                aria-describedby="currencyCode-error"
+              >
+                @for (rate of reference()?.rates; track rate.currency) {
+                  <option [value]="rate.currency">{{ rate.currency }}</option>
+                }</select
+              ><span id="currencyCode-error" class="field-error">{{
+                fieldError('currencyCode')
+              }}</span>
+            </div>
+          </div>
+          <div class="form-actions">
+            <a class="button subtle" routerLink="/employees" [queryParams]="query">Back to list</a
+            ><button class="button primary" type="submit" [disabled]="busy() || !reference()">
+              {{ busy() ? 'Saving…' : isNew ? 'Create employee' : 'Save changes' }}
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </fieldset>
+      </form>
+      <aside class="employee-aside">
+        @if (employee(); as employee) {
+          <section class="panel employee-card">
+            <div class="large-avatar" aria-hidden="true">
+              {{ employee.firstName[0] }}{{ employee.lastName[0] }}
+            </div>
+            <h2>{{ employee.firstName }} {{ employee.lastName }}</h2>
+            <p>{{ employee.employeeCode }} · {{ employee.departmentName }}</p>
+            <span class="status-pill" [class.inactive]="!employee.active">{{
+              employee.active ? 'Active employee' : 'Inactive employee'
+            }}</span>
+            <div class="saved-pay">
+              <span>Current saved annual base salary</span
+              ><strong>{{ employee.annualSalary | money: employee.currencyCode }}</strong
+              ><small>≈ {{ employee.usdEstimate | money: 'USD' }} · illustrative estimate</small>
+            </div>
+            <p class="updated">Updated {{ employee.updatedAt | date: 'medium' }}</p>
+          </section>
+        }
+        <section class="panel employee-note">
+          <span class="eyebrow">A CLEAR BASIS FOR COMPARISON</span>
+          <h2>Native records.<br />A shared perspective.</h2>
+          <p>
+            Salary is stored in its original currency. Dashboard USD estimates use documented fixed
+            rates and do not change the saved amount.
+          </p>
+          <p>
+            This workspace keeps current records. It does not reconstruct previous salary changes.
+          </p>
+          <a class="text-link" routerLink="/overview" [queryParams]="query"
+            >View salary overview →</a
+          >
+        </section>
+      </aside>
+    </div>
+  }
+</div>
