@@ -1,37 +1,15 @@
-# Implementation and validation plan
+# Delivery milestones
 
-All application milestones are pending. The initial documentation commit captures draft requirements and design before application code; it does not freeze unresolved scope.
+The original requirements/design drafts were committed before application code. The user then authorized choosing either reporting/history approach, confirmed basic HR access, and selected free local Compose plus a new public repository.
 
-| Milestone | Concrete outcome | Validation / evidence before completion |
-| --- | --- | --- |
-| 0. Requirements | Read original assessment, reconcile clarifications, answer initial questions, agree visibility/stack; commit approved one-page baseline | Source gaps and administrative placeholders explicit; decision register records actual answers |
-| 1. Foundation | Exact runtime/dependency/image versions, Maven Wrapper, Angular lockfile, formatting/static checks, PostgreSQL migrations, env examples, minimal CI | Fresh-checkout setup; runtime versions; empty-database migration; compilation/build |
-| 2. Vertical slice | HR login → paginated list → detail → salary update → summary, using a small fixture | Unit/security tests, PostgreSQL integration, browser execution probe |
-| 3. Correctness | Shared filters, native/selected reporting, decimal median/mean, validation, soft deactivation, conflict recovery | Risk-focused monetary, query, concurrency, and API integration cases |
-| 4. Dataset | Deterministic opt-in seed, 10,000 employees, justified indexes | Actual count, repeat-run preservation, stated environment and list/report timings |
-| 5. UX | Responsive accessible flows and all required failure/empty/loading states | Desktop/mobile browser journeys, keyboard checks, rendered screenshots |
-| 6. Containers | Multi-stage image, Compose readiness, database volume, configuration/runbook | Real image build/start; readiness; migrations; data after app restart; clean-checkout run |
-| 7. Review / GitHub | README, API examples, decisions, AI log, test mapping, video script, review map, agreed remote push | Clean working tree, actual SHA and remote branch verified; CI outcomes checked |
-| 8. Hosted demo | Agreed provider, cost/access plan, persistent DB, TLS and reviewer login | User authorization for spend/public deployment; actual URL and authenticated flow verified |
+| Milestone | Result / evidence |
+| --- | --- |
+| Requirements and tradeoffs | Draft `0c4d4ea`, settled pre-code baseline `e6350c3`; original-document 403 remains explicit |
+| Pinned foundation / employee API | `eb77009`; real compile and Angular scaffold build, not claimed as runtime validation |
+| Reporting / monetary rules / seed | `1977bc5`; numeric median, shared filters, deterministic 10,000-row seed; actual PostgreSQL tests |
+| Responsive HR workspace | `b65b223`; create/edit/deactivate, visible conflicts, five frontend tests, six desktop/phone journeys and axe overview checks |
+| Docker / test entrypoints / CI | `53953c9`; one-command deployment, actual Docker-only check script, readiness, isolated fresh-source startup, restart persistence |
+| Reviewer package and demo | README, architecture, API/money/runbook, decisions, actual evidence, AI log, review map, recorded 25-second MP4 and screenshots |
+| Source delivery | New public repository chosen by user; main-branch push and remote CI are verified during final delivery |
 
-Make small commits when each coherent milestone works; do not manufacture incremental history after all implementation is complete. Report actual commands and pass/fail/blocked status after milestones.
-
-## Requirement-to-test checklist
-
-| Requirement | Planned test or check | Current status |
-| --- | --- | --- |
-| HR sign-in/out and protected APIs | Security integration + Playwright | Not implemented/run |
-| CSRF on login and writes | API integration with missing/invalid/valid tokens | Not implemented/run |
-| Server search/filter/page/sort | PostgreSQL repository/API fixtures, boundary and escaping cases | Not implemented/run |
-| Salary edit and dashboard refresh | Transaction integration + browser journey | Not implemented/run |
-| No lost updates | Two concurrent/stale expected versions; verify stored winner | Not implemented/run |
-| Decimal money / mixed currency | Unit fixtures and PostgreSQL numeric aggregates | Awaiting reporting decision |
-| Odd/even/empty median and weighted mean | Known PostgreSQL populations | Not implemented/run |
-| 10,000 synthetic employees | Fresh DB count; seeded-key count; rerun preserving edited row | Not implemented/run |
-| Responsive / accessible UI | Browser at phone/desktop width; keyboard/labels/errors | Not implemented/run |
-| Docker Compose | Build, health, migration, persistence, shutdown/start | Blocked: socket denied in sandbox |
-| Fresh checkout / CI | Reproduce documented install/build/test commands | Pending implementation and shell network access |
-| GitHub push | Agreed target/visibility; verify remote SHA | App read access works; target unset, CLI auth fails |
-| Deployed app / video | Actual deployment smoke test; video checklist | Not started; provider/budget unresolved |
-
-No application test suite exists yet. A planned test is not a passing result.
+See [validation.md](validation.md) for requirement-to-test mapping, measured timings, exact executed checks, and platform/security/source limitations. A planned test or workflow definition is never counted as a passing execution. No hosting account, paid service, recruiter message, or assessment submission is part of this local delivery.

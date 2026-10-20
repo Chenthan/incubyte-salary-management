@@ -1,27 +1,44 @@
-# Runtime and access observations
+# Runtime and reproducible setup
 
-Observed 19 October 2026 in the managed cloud task. This is not a successful application setup report.
+Verified in the managed Linux AMD64 cloud workspace on 20 October 2026. Project: `/workspace/incubyte-salary-management`, branch `main`. No project `AGENTS.md` or existing application code was present at the start.
 
-| Check actually performed | Observation | Implication |
-| --- | --- | --- |
-| `pwd`; file discovery | `/workspace`; no initialized project repository; reserved root `.git` is an empty read-only directory | Keep project in `/workspace/incubyte-salary-management` with its own Git metadata |
-| Instruction/file discovery | No project `AGENTS.md`; only supplied handoff found; original `.docx` absent | Original assessment must still be reconciled |
-| `java -version` | OpenJDK 21.0.12.1 | Runtime available; `javac`/Maven not found in initial command lookup |
-| `node --version`; `npm --version` | v24.19.0; 11.9.0 | Compatible Node major for proposed Angular 21; dependency install untested |
-| `docker compose version` | v2.40.3 | Compose client available; does not establish daemon access |
-| Explicit local-socket `docker info` with endpoint/TLS selectors cleared | Socket connect rejected: operation not permitted | Sandbox access blocked; no images/containers validated |
-| `id`; socket/process inspection | Non-root UID 1000; socket group includes task user; daemon process exists | Do not restart daemon or claim it is absent; sandbox is the observed access barrier |
-| `gh auth status` | Active environment token reported invalid | CLI push not established; no credential values inspected or printed |
-| Connected GitHub profile/login tools | Read succeeded for account `Chenthan` | Connector read access works; does not establish CLI push or repository-creation capability |
-| Managed environment status | Connected/running; current observations; enforced unrestricted HTTP policy; no configured secrets/identities reported | Does not override shell sandbox network restrictions |
-| Network policy file | HTTP proxy required; no VPN; TCP allowlists empty | Preserve proxy/CA; do not attempt direct network bypass |
-| Shell `curl` through inherited proxy | Failed to connect to proxy in sandbox | Original link and dependency registries not fetched by shell |
-| Additional shell network permission attempts | Interrupted before results | No successful grant/fetch inferred; avoid repeating during this design pass |
-| Web tool opening provided requirements redirect | Not accessible through that tool | No claim that original assessment was read or returned a particular HTTP status |
-| Official Angular and Spring Boot docs via web tool | Read successfully | Compatibility evidence recorded in design; artifact install remains untested |
+| Component/check | Observed result |
+| --- | --- |
+| Docker / Compose | 28.4.0 / 2.40.3; actual image builds and health checks run |
+| Java in app/build images | Temurin 21.0.12.1; compiler and runtime exercised |
+| Host Java | Debian OpenJDK 21.0.12.1; host compiler absent, so builds/tests use the pinned JDK container |
+| Maven Wrapper | 3.9.16; official only-script 3.3.4 wrapper; ZIP SHA-256 verified by actual wrapper bootstrap |
+| Node / npm | 24.19.0 / 11.9.0; actual locked install, tests, build, type checks |
+| Angular / TypeScript / RxJS | 21.2.25 (CLI/build 21.2.27) / 5.9.3 / 7.8.2 |
+| PostgreSQL | 17.11; identical immutable image for test/demo DBs |
+| Browser | System Chromium 154.0.8037.57, Playwright 1.64.1; actual desktop/phone journeys and recording |
+| Public GitHub account | `Chenthan`; CLI and connector read authentication work with network access |
+| Assessment redirect | HTTP 403; original document not read |
 
-## Remaining environment work
+## Ordinary local setup
 
-Restore/authorize shell network and local Docker socket access through supported environment/sandbox controls before dependency installation and real Compose validation. The current non-root task cannot restart the Docker daemon. Do not disable TLS verification, unset proxies to bypass restrictions, inspect credentials, or copy session trust material into images.
+Only a running Docker engine with Compose v2.20+ is required for deployment. Run `./scripts/run.sh` or PowerShell `scripts/run.ps1`; it generates local configuration and waits for readiness. `./scripts/test.sh` runs containerized backend/PostgreSQL/frontend checks. Browser tests additionally use Node/Playwright; see the root README. Native Java development requires a JDK 21, not just a JRE.
 
-Choose and verify a GitHub remote and visibility. The connected app and shell Git authentication are separate paths; successful profile lookup is not proof a push will succeed. Verify browser executables and JDK compiler, resolve/download the Maven Wrapper, and use actual PostgreSQL rather than H2 for integration evidence.
+Direct dependency versions, npm lockfile, Maven Wrapper checksum, and image digests are committed. Official compatibility references: [Angular](https://angular.dev/reference/versions), [Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html). Actual installations/builds verify the selected combination rather than relying on version ranges alone.
+
+## Managed-cloud support
+
+The runtime HTTP policy is enforced and permits outbound HTTP through its configured proxy; no VPN or outbound identities were configured. Preserve inherited proxy and CA settings. Shell sandboxing initially blocked network/Docker access; narrow socket mount grants failed during sandbox setup. Authorized command escalation was required for actual network/build/browser operations. An earlier sandboxed `gh auth status` failure did not establish an invalid token; authenticated CLI access worked once network access was available.
+
+`compose.cloud.yml` supplies `CODEX_PROXY_CERT` as a BuildKit secret. `scripts/maven-network.sh` adapts Maven proxy settings and a temporary Java trust store, deleting temporary trust/settings in the same build step. The final image contains neither the session certificate nor credentials. TLS verification remains enabled. The main `run.sh` detects this optional environment variable; regular local machines do not need it.
+
+Actual developer commands used include:
+
+```sh
+bash scripts/cloud-check.sh backend spotless:apply verify -Pintegration
+./scripts/test.sh
+./scripts/run.sh
+cd frontend
+npm test
+npm run build
+npm run format:check
+npm run typecheck:e2e
+CAPTURE_DEMO=1 PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run e2e
+```
+
+The cloud's VFS Docker driver uses substantial physical disk across repeated builds. A clean-build attempt hit its 32 GiB filesystem limit; unused cache/project test images were cleared and the isolated startup rerun passed. Database row fingerprints were preserved. No volume-pruning operation belongs in normal startup. The [validation report](validation.md) records exact evidence, measurements, platform limits, and unverified items.
