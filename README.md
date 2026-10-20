@@ -99,5 +99,3 @@ Java 21; Spring Boot 4.1.1; Maven 3.9.16; Angular 21.2.25 with CLI/build 21.2.27
 - [AI usage, accepted suggestions, corrections, and real checks](docs/ai-usage.md)
 - [Operation, backups, configuration, and deployment limits](docs/runbook.md)
 - [Runtime and environment setup](docs/runtime-status.md)
-
-The original assessment redirect returned HTTP 403. The supplied handoff and the user's later scope choices form the documented baseline; original wording remains unverified. This repository is not an assessment submission. No recruiter messages were sent. The public repository contains synthetic data and neutral requirements, not private correspondence or runtime credentials.
