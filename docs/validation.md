@@ -1,6 +1,6 @@
 # Validation evidence
 
-Recorded 20 October 2026. Results below describe checks actually executed in the managed Linux cloud workspace. No independent human review, public hosting, or assessment submission is claimed.
+Recorded 20 October 2026. Results below describe checks actually executed in the managed Linux cloud workspace and GitHub Actions. Independent human review and public application hosting are outside this verification record.
 
 ## Executed checks
 
@@ -17,8 +17,9 @@ Recorded 20 October 2026. Results below describe checks actually executed in the
 | Docker-only `./scripts/test.sh` | Passed: actual container builds, 7 unit + 14 PostgreSQL integration + 5 frontend tests, formatting, and test type checking |
 | One-command `./scripts/run.sh` | Passed: generated private config, build, migration, seed, database readiness, application readiness |
 | Real browser recording | Passed; 25.32-second MP4, plus actual desktop/phone/detail/sign-in screenshots |
+| Remote GitHub Actions | [Passed on `main` at `08213b6`](https://github.com/Chenthan/incubyte-salary-management/actions/runs/39394576034): Docker-only checks, assembled application startup, 10,000 seeded records, and desktop/phone browser journeys |
 
-GitHub Actions repeats builds/tests on main pushes and PRs; its per-commit result is available in the repository's Actions tab. A checked-in workflow is not itself a claim that a particular remote run passed.
+GitHub Actions repeats builds/tests on main pushes and PRs. The linked completed run validates commit `08213b67065d1c5c7199ddbee0721473dbb29121` on an Ubuntu 24.04 runner. Later commits have their own results in the repository's [Actions tab](https://github.com/Chenthan/incubyte-salary-management/actions); the recorded result does not imply that an unobserved run passed.
 
 The browser mutation journey includes creation, invalid salary input, valid update, an external edit while the original form stays open, 409 recovery with draft preservation, reload/reapply, report refresh, deactivation, and logout. The other journey checks shared country/department filters, pagination, and zero results. These are real HTTP/browser checks, not mocks of the algorithms.
 
@@ -37,7 +38,7 @@ The browser mutation journey includes creation, invalid salary input, valid upda
 | Responsive usable UI | Actual desktop/phone journeys, screenshots, agent visual inspection, axe overview check |
 | Reproducible local deployment | Digest-pinned images, npm lockfile, checksum-pinned Maven Wrapper, executed startup and Docker-only test scripts |
 | Intentional AI workflow | Genuine incremental commits and [AI usage log](ai-usage.md), including errors caught by real checks |
-| Demo/source delivery | [Recorded MP4](demo.mp4), [review guide](review-guide.md), public repository selected by user |
+| Demo/source delivery | [Recorded MP4](demo.mp4), [review guide](review-guide.md), [published public repository](https://github.com/Chenthan/incubyte-salary-management), and passing remote CI linked above |
 
 ## Seed verification
 
@@ -71,7 +72,6 @@ These are small warm-run observations in this environment, not an SLA, productio
 - Native Windows Docker Desktop and ARM/macOS startup were not executed here. The PowerShell launcher is provided; Linux AMD64 is the demonstrated environment.
 - Axe covered the populated overview at two sizes, not every state or assistive technology. Agent visual review is not independent human accessibility review.
 - No public application hosting/TLS deployment, account recovery/administration, login throttling, salary history/audit, real employee data, or production backup/recovery exercise is claimed.
-- Submission deadline is unknown. No assessment was submitted and no recruiter message was sent.
 
 ## Restart and clean-checkout verification
 

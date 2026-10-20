@@ -12,7 +12,7 @@ Verified in the managed Linux AMD64 cloud workspace on 20 October 2026. Project:
 | Angular / TypeScript / RxJS | 21.2.25 (CLI/build 21.2.27) / 5.9.3 / 7.8.2 |
 | PostgreSQL | 17.11; identical immutable image for test/demo DBs |
 | Browser | System Chromium 154.0.8037.57, Playwright 1.64.1; actual desktop/phone journeys and recording |
-| Public GitHub account | `Chenthan`; CLI and connector read authentication work with network access |
+| Public GitHub repository | [Chenthan/incubyte-salary-management](https://github.com/Chenthan/incubyte-salary-management); `main` published and remote CI passed; see [validation evidence](validation.md) |
 | Assessment redirect | HTTP 403; original document not read |
 
 ## Ordinary local setup

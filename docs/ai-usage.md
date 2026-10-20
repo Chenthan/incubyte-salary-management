@@ -1,6 +1,6 @@
 # AI usage and verification log
 
-This log records actual activity. It does not represent independent human review or completed implementation.
+This log records actual activity in chronological order. Each entry describes the state at that milestone; early pending items are resolved by later entries. Current delivery status and executed checks are recorded in [validation.md](validation.md). Agent review does not represent independent human review.
 
 ## 19 October 2026 — requirements and design preparation
 
@@ -43,3 +43,11 @@ Recorded a real synthetic-data browser walkthrough with Playwright, then convert
 The documented Docker-only `./scripts/test.sh` completed successfully: image builds, seven backend unit tests, fourteen actual PostgreSQL integration tests, five frontend unit tests, formatting, and strict E2E type checking. It stopped the disposable test DB and retained the demo volume. Read-only sequential API measurements were recorded at 12:56 IST: median page 13.97 ms, global summary 46.55 ms, India/Engineering summary 9.30 ms, each from 20 warm samples. [Validation evidence](validation.md) records the complete context and limitations; these are not concurrency benchmarks. The chosen GitHub repository name did not already exist when checked.
 
 The actual Maven Wrapper bootstrap returned Maven 3.9.16 and validated its ZIP checksum. Application restart retained an identical full employee-row fingerprint. A clean Git archive at `53953c9` generated new configuration and started on isolated port 18081 with 10,000 employees, 9,500 active, six countries, frontend 200, readiness UP; only its disposable volume was removed. An initial attempt ran out of VFS build-storage space; cache/project test-image cleanup and a successful retry are documented honestly, including the unchanged original data fingerprint. No independent human review or native Windows/ARM execution is claimed. The public delivery package is checked for private source/contact links and generated credential leakage before publishing.
+
+## 20 October 2026 — public delivery and documentation cleanup
+
+The connected integration could not create a repository, so the user created the public `Chenthan/incubyte-salary-management` repository. Pushed all seven incremental commits through `2c724af`. [GitHub Actions run 39389574980](https://github.com/Chenthan/incubyte-salary-management/actions/runs/39389574980) passed, including Docker-only checks, assembled application startup, deterministic seed verification, and six desktop/phone browser journeys.
+
+The user's subsequent README-only commit `08213b6` removed statements about external assessment submission and recruiter messages; [its CI run also passed](https://github.com/Chenthan/incubyte-salary-management/actions/runs/39394576034). Preserved that edit. Following the user's request to clean up documentation and push, updated stale repository/implementation status, linked actual remote CI evidence, archived the early administrative draft, and separated submission logistics from the engineering record. Historical implementation entries remain intact; this cleanup changes documentation only.
+
+Cleanup verification: `git diff --check` passed, all relative links across 14 tracked Markdown files resolved, and the changed-file check confirmed nine documentation files with no README or application changes.

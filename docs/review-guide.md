@@ -43,4 +43,4 @@ The [25-second real recording](demo.mp4) shows sign-in, India/Engineering filter
 6. Show phone/keyboard access, sign-out, and an anonymous API denial.
 7. Explain one substantive alternative, actual test evidence, and current limits.
 
-The recording and script are not a recruiter submission. Review the complete codebase and practice the explanation in your own words.
+The recording and checklist accompany the published source. Review the complete codebase and practice the explanation in your own words.

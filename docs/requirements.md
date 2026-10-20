@@ -1,8 +1,8 @@
 # Requirements — implementation baseline
 
-**Status:** implementation baseline, updated 20 October 2026 after the user authorized proceeding with either reporting/history approach and requested free local Compose deployment. Initially written and committed before application coding on 19 October 2026. Original-document wording remains unverified.
+**Status:** implemented baseline, updated 20 October 2026 after the user authorized proceeding with either reporting/history approach and requested free local Compose deployment. Initially written and committed before application coding on 19 October 2026. Source is published in the public repository; executed checks are recorded in [validation.md](validation.md). Original-document wording remains unverified.
 
-**Evidence:** the supplied handoff reports recruiter-approved clarifications and deliverables recovered from an earlier assessment review. The original assessment document is not in the workspace. The supplied redirect link could not be read; original wording remains unverified. Reconcile it before finalizing this baseline, retaining later explicit clarifications.
+**Evidence:** the supplied handoff reports recruiter-approved clarifications and deliverables recovered from an earlier assessment review. The original assessment document is not in the workspace. The supplied redirect link could not be read; original wording remains unverified. This baseline follows the handoff and the user's later explicit scope choices.
 
 ## Goal and users
 
@@ -15,7 +15,7 @@ Give signed-in HR staff a clear way to find employees, maintain their gross annu
 3. Which departments account for the largest salary cost within a comparable reporting currency?
 4. Which employees exceed a salary threshold in a specified currency?
 
-## Proposed first release
+## Implemented first release
 
 - HR sign-in/sign-out, with authenticated API access and protected mutations.
 - Server-paginated employee search, country/department/status filters, stable allowlisted sorting, and bounded page size.
@@ -37,4 +37,4 @@ Give signed-in HR staff a clear way to find employees, maintain their gross annu
 
 ## Chosen scope and exclusions
 
-Use native salary records plus documented fixed-rate illustrative USD comparisons, current records without import/history, and one HR role. These choices support cross-country questions with a small workflow; past salaries cannot be reconstructed. Deliver a local Docker Compose application with one-command startup, automatically generated local credentials, and no hosting charge. No payroll, taxes, approval workflow, runtime AI, live FX, external identity provider, email delivery, import/export, projections, or distributed services. Repository visibility/target and submission time remain open; they do not block development. No deadline or reviewer identity is inferred.
+The implementation uses native salary records plus documented fixed-rate illustrative USD comparisons, current records without import/history, and one HR role. These choices support cross-country questions with a small workflow; past salaries cannot be reconstructed. Delivery is a local Docker Compose application with one-command startup, automatically generated local credentials, and no hosting charge. Source is published at [Chenthan/incubyte-salary-management](https://github.com/Chenthan/incubyte-salary-management), the public repository selected by the user. Payroll, taxes, approval workflows, runtime AI, live FX, external identity providers, email delivery, import/export, projections, and distributed services are outside this release. Assessment submission logistics are separate from the application; no deadline or reviewer identity is inferred.
