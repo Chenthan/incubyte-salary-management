@@ -1,6 +1,6 @@
-# Requirements — one-page draft
+# Requirements — implementation baseline
 
-**Status:** proposed, not an approved implementation baseline. Written before application coding on 19 October 2026.
+**Status:** implementation baseline, updated 20 October 2026 after the user authorized proceeding with either reporting/history approach and requested free local Compose deployment. Initially written and committed before application coding on 19 October 2026. Original-document wording remains unverified.
 
 **Evidence:** the supplied handoff reports recruiter-approved clarifications and deliverables recovered from an earlier assessment review. The original assessment document is not in the workspace. The supplied redirect link could not be read; original wording remains unverified. Reconcile it before finalizing this baseline, retaining later explicit clarifications.
 
@@ -35,6 +35,6 @@ Give signed-in HR staff a clear way to find employees, maintain their gross annu
 6. Browser tests exercise sign-in, filtered browsing, salary edit → report refresh, validation, and unauthorized access. Actual execution evidence is required before claiming success.
 7. Seed count and representative timings are measured on a stated environment. Documentation maps requirements to tests and identifies unverified deliverables.
 
-## Exclusions and open decisions
+## Chosen scope and exclusions
 
-No payroll, taxes, approval workflow, runtime AI, live FX, external identity provider, email delivery, import/export, projections, or distributed services are proposed. Salary history is undecided; current-only is recommended. Native-only reporting versus native records plus fixed-rate USD comparison is undecided. Submission target/time budget, hosting budget/provider, repository visibility, and reviewer access are unresolved. A deadline and reviewer identity in the correspondence were unfilled placeholders; no real values are inferred.
+Use native salary records plus documented fixed-rate illustrative USD comparisons, current records without import/history, and one HR role. These choices support cross-country questions with a small workflow; past salaries cannot be reconstructed. Deliver a local Docker Compose application with one-command startup, automatically generated local credentials, and no hosting charge. No payroll, taxes, approval workflow, runtime AI, live FX, external identity provider, email delivery, import/export, projections, or distributed services. Repository visibility/target and submission time remain open; they do not block development. No deadline or reviewer identity is inferred.

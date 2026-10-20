@@ -17,3 +17,7 @@ This log records actual activity. It does not represent independent human review
 **Rejected/deferred:** no runtime LLM, paid API, live FX, broker, Redis, Kubernetes, CSV import, export, or invented deployment. Do not turn an unexecuted test configuration into a claimed result.
 
 Future entries should record the real prompt/summary, accepted/rejected design or generated changes, affected files, actual test commands/results, and remaining limitations at each implementation milestone.
+
+## 20 October 2026 — scope authorization
+
+The user confirmed either currency/history approach is acceptable, documented fixed rates are sufficient, a single HR sign-in is sufficient, and requested free local Compose with minimal manual setup. A later message explicitly instructed continuing, using the user's current system if required. Under that authorization, chose native records plus fixed-rate USD estimates, current-only salaries without import, and one-command local deployment. Updated the requirements baseline before writing application code. GitHub target/visibility was requested asynchronously; no publication choice is inferred. Network/Docker access still requires the workspace sandbox permission process.
