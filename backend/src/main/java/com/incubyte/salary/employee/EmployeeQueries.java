@@ -1,6 +1,7 @@
 package com.incubyte.salary.employee;
 
 import com.incubyte.salary.common.ApiException;
+import com.incubyte.salary.reporting.ReferenceDataService;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class EmployeeQueries {
@@ -16,20 +19,24 @@ public class EmployeeQueries {
   private static final String COLUMNS =
       "SELECT e.*, c.name AS country_name, d.name AS department_name, f.usd_per_unit";
   private final NamedParameterJdbcTemplate jdbc;
+  private final ReferenceDataService referenceData;
 
-  public EmployeeQueries(NamedParameterJdbcTemplate jdbc) {
+  public EmployeeQueries(NamedParameterJdbcTemplate jdbc, ReferenceDataService referenceData) {
     this.jdbc = jdbc;
+    this.referenceData = referenceData;
   }
 
   public record EmployeePage(
       List<EmployeeView> content, long totalElements, int page, int size, long totalPages) {}
 
+  @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
   public EmployeePage page(
       PopulationFilter filter, int page, int size, String sort, String direction) {
     if (page < 0 || page > 100000 || size < 1 || size > 100) {
       throw new ApiException(
           HttpStatus.BAD_REQUEST, "INVALID_PAGE", "Page must be nonnegative; size must be 1–100.");
     }
+    referenceData.validate(filter);
     PopulationFilter.Sql query = filter.sql();
     Map<String, Object> parameters = new LinkedHashMap<>(query.parameters());
     parameters.put("limit", size);

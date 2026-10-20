@@ -29,9 +29,10 @@ public class HrBootstrap implements ApplicationRunner {
   public void run(ApplicationArguments arguments) {
     if (!username.matches("[A-Za-z0-9._-]{2,80}")
         || password.length() < 16
-        || password.length() > 64) {
+        || password.length() > 64
+        || password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72) {
       throw new IllegalStateException(
-          "HR_USERNAME must be 2–80 safe characters; HR_PASSWORD must be 16–64 characters.");
+          "HR_USERNAME must be 2–80 safe characters; HR_PASSWORD must be 16–64 characters and at most 72 UTF-8 bytes.");
     }
     if (jdbc.queryForObject(
             "SELECT count(*) FROM hr_users WHERE username = ?", Long.class, username)
